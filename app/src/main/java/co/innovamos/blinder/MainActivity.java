@@ -1,5 +1,6 @@
 package co.innovamos.blinder;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private String target_url_prefix = "blinder.com.co";
 
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,35 +58,6 @@ public class MainActivity extends AppCompatActivity {
 
         webView.setHorizontalScrollBarEnabled(false);
 
-       /** webView.setOnTouchListener(new View.OnTouchListener() {
-            float m_downX;
-            public boolean onTouch(View v, MotionEvent event) {
-
-                if (event.getPointerCount() > 1) {
-                    //Multi touch detected
-                    return true;
-                }
-
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN: {
-                        // save the x
-                        m_downX = event.getX();
-                        break;
-                    }
-                    case MotionEvent.ACTION_MOVE:
-                    case MotionEvent.ACTION_CANCEL:
-                    case MotionEvent.ACTION_UP: {
-                        // set x so that it doesn't move
-                        event.setLocation(m_downX, event.getY());
-                        break;
-                    }
-
-                }
-                return false;
-            }
-        });*/
-
-
         WebSettings webSettings = webView.getSettings();
         webSettings.setUseWideViewPort(true);
         webSettings.setLoadWithOverviewMode(false);
@@ -99,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
             webSettings.setMixedContentMode( WebSettings.MIXED_CONTENT_ALWAYS_ALLOW );
         }
 
-
         webView.setWebViewClient(new MyCustomWebViewClient());
         webView.setWebChromeClient(new UriWebChromeClient());
         webView.loadUrl("https://blinder.com.co");
@@ -108,18 +80,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     private class MyCustomWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             String host = Uri.parse(url).getHost();
-
             if( url.startsWith("http:") || url.startsWith("https:") ) {
-
                 if(Uri.parse(url).getPath().equals("/connection-compte.html")) {
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://blinder.com.co"));
                     startActivity(browserIntent);
-
                     return true ;
                 }
 
@@ -140,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             }
-
 
             // Otherwise allow the OS to handle it
             else if (url.startsWith("tel:")) {
