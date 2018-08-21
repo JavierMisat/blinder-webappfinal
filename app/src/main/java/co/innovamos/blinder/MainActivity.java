@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.DownloadManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -34,8 +35,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
+import android.webkit.DownloadListener;
 import android.webkit.GeolocationPermissions;
 import android.webkit.SslErrorHandler;
+import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -43,6 +46,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -157,9 +161,9 @@ public class MainActivity extends AppCompatActivity {
 
         //verifica si se desea mostrar la barra de carga
         if (ASWP_PBAR) {
-            //asw_progress = findViewById(R.id.msw_progress);
+            asw_progress = findViewById(R.id.msw_progress);
         } else {
-            // findViewById(R.id.msw_progress).setVisibility(View.GONE);
+            findViewById(R.id.msw_progress).setVisibility(View.GONE);
         }
 
         //Getting GPS location of device if given permission
@@ -179,13 +183,46 @@ public class MainActivity extends AppCompatActivity {
          * @author javier misat
          * Funcion para evitar el scrool horizontal
          */
-
+        /**
+         * @author Javier Misat
+         * @return void
+         * @description Evita que el usuario haga scrool horizontalmente
+         */
         webView.setOnTouchListener(new View.OnTouchListener() {
+            float m_downX;
+
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if (event.getPointerCount() > 1) {
+                    //Multi touch detected
+                    return true;
+                }
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        // save the x
+                        m_downX = event.getX();
+                        break;
+                    }
+                    case MotionEvent.ACTION_MOVE:
+                    case MotionEvent.ACTION_CANCEL:
+                    case MotionEvent.ACTION_UP: {
+                        // set x so that it doesn't move
+                        event.setLocation(m_downX, event.getY());
+                        break;
+                    }
+
+                }
+                return false;
+            }
+        });
+       /*webView.setOnTouchListener(new View.OnTouchListener() {
 
             public boolean onTouch(View v, MotionEvent event) {
                 return (event.getAction() == MotionEvent.ACTION_MOVE);
             }
-        });
+        });*/
+
 
         webView.setHorizontalScrollBarEnabled(false);
 
@@ -205,6 +242,38 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= 21) {
             webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
+
+        webView.setDownloadListener(new DownloadListener() {
+            @Override
+            public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimeType, long contentLength) {
+                DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+
+                request.setMimeType(mimeType);
+                String cookies = CookieManager.getInstance().getCookie(url);
+                request.addRequestHeader("cookie", cookies);
+                request.addRequestHeader("User-Agent", userAgent);
+                request.setDescription(getString(R.string.dl_downloading));
+                request.setTitle(URLUtil.guessFileName(url, contentDisposition, mimeType));
+                request.allowScanningByMediaScanner();
+                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(url, contentDisposition, mimeType));
+                DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+                assert dm != null;
+                dm.enqueue(request);
+                Toast.makeText(getApplicationContext(), getString(R.string.dl_downloading2), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        }
+        webView.setVerticalScrollBarEnabled(false);
+
 
         webView.setWebViewClient(new MyCustomWebViewClient());
         webView.setWebChromeClient(new UriWebChromeClient());
@@ -278,9 +347,12 @@ public class MainActivity extends AppCompatActivity {
                     mWebviewPop = null;
                 }
                 view.loadUrl("https://blinder.com.co");
+                findViewById(R.id.msw_welcome).setVisibility(View.GONE);
+                findViewById(R.id.webView).setVisibility(View.VISIBLE);
                 return;
             }
             super.onPageFinished(view, url);
+
         }
     }
 
@@ -381,16 +453,18 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
-        /*Getting webview rendering progress
+        //Getting webview rendering progress
         @Override
         public void onProgressChanged(WebView view, int p) {
             if (ASWP_PBAR) {
                 asw_progress.setProgress(p);
                 if (p == 100) {
                     asw_progress.setProgress(0);
+                    findViewById(R.id.msw_welcome).setVisibility(View.GONE);
+                    findViewById(R.id.webView).setVisibility(View.VISIBLE);
                 }
             }
-        }*/
+        }
 
         // overload the geoLocations permissions prompt to always allow instantly as app permission was granted previously
         public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
