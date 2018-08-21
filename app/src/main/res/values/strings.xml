@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">Blinder</string>
+    <string name="image_view">Imagen</string>
+    <string name="loading">Cargando</string>
+    <string name="mgks_promo">Blinder</string>
+    <string name="rate_dialog_title">Calificanos</string>
+    <string name="rate_dialog_message">Si te gusta Blinder, ¿te importaría tomar un momento para calificarla? No llevará más de un minuto. ¡Gracias!</string>
+    <string name="rate_dialog_ok">CALIFICAR</string>
+    <string name="rate_dialog_cancel">LUEGO</string>
+    <string name="rate_dialog_no">NO PREGUNTAR DE NUEVO</string>
+    <string name="loc_req">Permite que Blinder obtenga tu información de ubicación.</string>
+    <string name="loc_fail">Failed to Find Location</string>
+    <string name="loc_fail_text">Por favor revisa tu ubicación GPS.</string>
+    <string name="loc_fail_more">Verifica si tu GPS está habilitado; de lo contrario, configúralo con alta precisión desde la configuración de ubicación.</string>
+    <string name="loc_perm">Permitir acceso a ubicación</string>
+    <string name="loc_perm_text">Dale permiso a Blinder para verificar tu ubicación.</string>
+    <string name="loc_perm_more">Permite que Blinder conozca tu ubicación para una mejor experiencia.</string>
+    <string name="dl_downloading">Descargando archivo…</string>
+    <string name="dl_downloading2">Descargando archivo</string>
+    <string name="fl_chooser">Seleccionar archivo</string>
+    <string name="went_wrong">¡Algo salió mal!</string>
+    <string name="check_connection">¡Por favor revisa tu conexión a Internet!</string>
+    <string name="share_w_friends">Compartir con tus amigos</string>
 </resources>
