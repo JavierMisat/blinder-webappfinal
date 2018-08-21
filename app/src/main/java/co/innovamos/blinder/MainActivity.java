@@ -3,12 +3,17 @@ package co.innovamos.blinder;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
@@ -16,8 +21,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -27,6 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
+import android.webkit.GeolocationPermissions;
 import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -103,9 +111,9 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         String dataString = intent.getDataString();
                         if (dataString != null) {
-                            results = new Uri[]{ Uri.parse(dataString) };
+                            results = new Uri[]{Uri.parse(dataString)};
                         } else {
-                            if(ASWP_MULFILE) {
+                            if (ASWP_MULFILE) {
                                 if (intent.getClipData() != null) {
                                     final int numSelectedFiles = intent.getClipData().getItemCount();
                                     results = new Uri[numSelectedFiles];
@@ -155,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Getting GPS location of device if given permission
-        if(!check_permission(1)){
+        if (!check_permission(1)) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, loc_perm);
         }
 
@@ -384,18 +392,18 @@ public class MainActivity extends AppCompatActivity {
             }
         }*/
 
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        if (webView.isFocused() && webView.canGoBack()) {
-            webView.goBack();
-        } else {
-            super.onBackPressed();
+        // overload the geoLocations permissions prompt to always allow instantly as app permission was granted previously
+        public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+            if (Build.VERSION.SDK_INT < 23 || (Build.VERSION.SDK_INT >= 23 && check_permission(1))) {
+                // location permissions were granted previously so auto-approve
+                callback.invoke(origin, true, false);
+            } else {
+                // location permissions not granted so request them
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, loc_perm);
+            }
         }
-    }
 
+    }
 
     /**
      * @author javier misat
@@ -447,6 +455,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Using cookies to update user locations
+    public void get_location(){
+        //Checking for location permissions
+        if (ASWP_LOCATION && ((Build.VERSION.SDK_INT >= 23 && check_permission(1)) || Build.VERSION.SDK_INT < 23)) {
+            CookieManager cookieManager = CookieManager.getInstance();
+            cookieManager.setAcceptCookie(true);
+            GPSTrack gps;
+            gps = new GPSTrack(MainActivity.this);
+            double latitude = gps.getLatitude();
+            double longitude = gps.getLongitude();
+            if (gps.canGetLocation()) {
+                if (latitude != 0 || longitude != 0) {
+                    cookieManager.setCookie(ASWV_URL, "lat=" + latitude);
+                    cookieManager.setCookie(ASWV_URL, "long=" + longitude);
+                    //Log.w("New Updated Location:", latitude + "," + longitude);  //enable to test dummy latitude and longitude
+                } else {
+                    Log.w("New Updated Location:", "NULL");
+                }
+            } else {
+                show_notification(1, 1);
+                Log.w("New Updated Location:", "FAIL");
+            }
+        }
+    }
+
     //Checking if particular permission is given or not
     public boolean check_permission(int permission) {
         switch (permission) {
@@ -472,13 +505,87 @@ public class MainActivity extends AppCompatActivity {
         return File.createTempFile(new_name, ".jpg", sd_directory);
     }
 
+    //Creating custom notifications with IDs
+    public void show_notification(int type, int id) {
+        long when = System.currentTimeMillis();
+        asw_notification = (NotificationManager) MainActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent i = new Intent();
+        if (type == 1) {
+            i.setClass(MainActivity.this, MainActivity.class);
+        } else if (type == 2) {
+            i.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        } else {
+            i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            i.addCategory(Intent.CATEGORY_DEFAULT);
+            i.setData(Uri.parse("package:" + MainActivity.this.getPackageName()));
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        }
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "");
+        switch(type){
+            case 1:
+                builder.setTicker(getString(R.string.app_name));
+                builder.setContentTitle(getString(R.string.loc_fail));
+                builder.setContentText(getString(R.string.loc_fail_text));
+                builder.setStyle(new NotificationCompat.BigTextStyle().bigText(getString(R.string.loc_fail_more)));
+                builder.setVibrate(new long[]{350,350,350,350,350});
+                builder.setSmallIcon(R.mipmap.ic_launcher);
+                break;
+
+            case 2:
+                builder.setTicker(getString(R.string.app_name));
+                builder.setContentTitle(getString(R.string.app_name));
+                builder.setContentText(getString(R.string.loc_perm_text));
+                builder.setStyle(new NotificationCompat.BigTextStyle().bigText(getString(R.string.loc_perm_more)));
+                builder.setVibrate(new long[]{350, 700, 350, 700, 350});
+                builder.setSound(alarmSound);
+                builder.setSmallIcon(R.mipmap.ic_launcher);
+                break;
+        }
+        builder.setOngoing(false);
+        builder.setAutoCancel(true);
+        builder.setContentIntent(pendingIntent);
+        builder.setWhen(when);
+        builder.setContentIntent(pendingIntent);
+        asw_notification_new = builder.build();
+        asw_notification.notify(id, asw_notification_new);
+    }
+
 
     /**
      * Sobreescribiendo metodos de la actividad
      */
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        //Coloring the "recent apps" tab header; doing it onResume, as an insurance
+        if (Build.VERSION.SDK_INT >= 23) {
+            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+            ActivityManager.TaskDescription taskDesc;
+            taskDesc = new ActivityManager.TaskDescription(getString(R.string.app_name), bm, getColor(R.color.colorPrimary));
+            MainActivity.this.setTaskDescription(taskDesc);
+        }
+        get_location();
+    }
 
-//Action on back key tap/click
+    @Override
+    public void onBackPressed() {
+        if (webView.isFocused() && webView.canGoBack()) {
+            webView.goBack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    //Action on back key tap/click
     @Override
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {

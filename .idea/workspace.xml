@@ -11,7 +11,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1b495802-86f8-45dc-b0f8-6a381e0e1c47" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/app/src/main/java/co/innovamos/blinder/SmartWebView.java" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/app/src/main/java/co/innovamos/blinder/GPSTrack.java" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.4/fileHashes/fileHashes.bin" afterPath="$PROJECT_DIR$/.gradle/4.4/fileHashes/fileHashes.bin" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.4/fileHashes/fileHashes.lock" afterPath="$PROJECT_DIR$/.gradle/4.4/fileHashes/fileHashes.lock" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.4/javaCompile/classAnalysis.bin" afterPath="$PROJECT_DIR$/.gradle/4.4/javaCompile/classAnalysis.bin" />
@@ -20,12 +20,8 @@
       <change beforePath="$PROJECT_DIR$/.gradle/4.4/taskHistory/taskHistory.bin" afterPath="$PROJECT_DIR$/.gradle/4.4/taskHistory/taskHistory.bin" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.4/taskHistory/taskHistory.lock" afterPath="$PROJECT_DIR$/.gradle/4.4/taskHistory/taskHistory.lock" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/app/app.iml" afterPath="$PROJECT_DIR$/app/app.iml" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" afterPath="$PROJECT_DIR$/app/build.gradle" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/co/innovamos/blinder/MainActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/co/innovamos/blinder/MainActivity.java" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -86,14 +82,18 @@
       <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/co/innovamos/blinder/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="259">
-              <caret line="85" column="4" lean-forward="false" selection-start-line="85" selection-start-column="4" selection-end-line="85" selection-end-column="4" />
+            <state relative-caret-position="341">
+              <caret line="456" column="4" lean-forward="false" selection-start-line="456" selection-start-column="4" selection-end-line="456" selection-end-column="4" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#20087#20088#0" expanded="true" />
-                <element signature="e#20118#20119#0" expanded="true" />
-                <element signature="e#20163#20164#0" expanded="true" />
-                <element signature="e#20193#20194#0" expanded="true" />
+                <element signature="e#22772#22800#0" expanded="true" />
+                <element signature="e#23272#23300#0" expanded="true" />
+                <element signature="e#23343#23371#0" expanded="true" />
+                <element signature="e#24559#24587#0" expanded="true" />
+                <element signature="e#25512#25513#0" expanded="true" />
+                <element signature="e#25543#25544#0" expanded="true" />
+                <element signature="e#25588#25589#0" expanded="true" />
+                <element signature="e#25618#25619#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -139,10 +139,12 @@
       <find>com.example.haider.myapplication.</find>
       <find>chromeclie</find>
       <find>get_info</find>
-      <find>get_file</find>
       <find>oncreate</find>
       <find>}</find>
       <find>oncrea</find>
+      <find>get_file</find>
+      <find>create</find>
+      <find>GPS</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -2170,6 +2172,7 @@
         <option value="$PROJECT_DIR$/app/src/main/java/co/innovamos/blinder/SmartWebView.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/co/innovamos/blinder/GPSTrack.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/co/innovamos/blinder/MainActivity.java" />
       </list>
     </option>
@@ -2607,16 +2610,28 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/co/innovamos/blinder/GPSTrack.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="19" column="13" lean-forward="false" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/co/innovamos/blinder/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="259">
-          <caret line="85" column="4" lean-forward="false" selection-start-line="85" selection-start-column="4" selection-end-line="85" selection-end-column="4" />
+        <state relative-caret-position="341">
+          <caret line="456" column="4" lean-forward="false" selection-start-line="456" selection-start-column="4" selection-end-line="456" selection-end-column="4" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#20087#20088#0" expanded="true" />
-            <element signature="e#20118#20119#0" expanded="true" />
-            <element signature="e#20163#20164#0" expanded="true" />
-            <element signature="e#20193#20194#0" expanded="true" />
+            <element signature="e#22772#22800#0" expanded="true" />
+            <element signature="e#23272#23300#0" expanded="true" />
+            <element signature="e#23343#23371#0" expanded="true" />
+            <element signature="e#24559#24587#0" expanded="true" />
+            <element signature="e#25512#25513#0" expanded="true" />
+            <element signature="e#25543#25544#0" expanded="true" />
+            <element signature="e#25588#25589#0" expanded="true" />
+            <element signature="e#25618#25619#0" expanded="true" />
           </folding>
         </state>
       </provider>
